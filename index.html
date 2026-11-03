@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LM Level Calculator</title>
+  <meta name="description" content="Les Mills Level Calculator - Certification & Grades Tool" />
+
+  <!-- Google Fonts: Bebas Neue & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            bebas: ['"Bebas Neue"', 'sans-serif'],
+            sans: ['Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-gray-50 text-neutral-900 transition-colors duration-200 min-h-screen flex flex-col items-center justify-between p-4 sm:p-6 font-sans">
+
+  <!-- Main Card Container -->
+  <div class="w-full flex-1 flex items-center justify-center py-4">
+    <div id="calculatorCard" class="bg-white border border-gray-100 rounded-3xl p-8 w-full max-w-lg shadow-sm transition-colors duration-200">
+      
+      <!-- Card Header -->
+      <div class="flex justify-between items-center mb-2">
+        <h1 id="appTitle" class="font-bebas text-4xl sm:text-5xl tracking-wide text-neutral-900 leading-none transition-colors">
+          LM LEVEL CALCULATOR
+        </h1>
+        <button 
+          id="btnReset"
+          type="button"
+          title="Reset" 
+          aria-label="Reset"
+          class="p-2.5 rounded-xl bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-neutral-900 transition-all flex items-center justify-center active:scale-95 group cursor-pointer"
+        >
+          <svg class="w-4 h-4 transition-transform group-hover:-rotate-90 duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+            <path d="M3 3v5h5" />
+          </svg>
+        </button>
+      </div>
+      <p id="appSubtitle" class="text-gray-500 mb-8 text-sm transition-colors">
+        Select grades for the 5 key elements.
+      </p>
+
+      <!-- Key Elements Inputs -->
+      <div id="elementsContainer" class="space-y-6"></div>
+
+      <!-- Calculate Button -->
+      <button 
+        id="btnCalculate"
+        type="button"
+        class="w-full mt-8 py-3 bg-black text-white font-bold rounded-2xl hover:bg-gray-800 transition-all cursor-pointer active:scale-[0.99]"
+      >
+        calculate
+      </button>
+
+      <!-- Result Card -->
+      <div id="resultContainer" class="mt-8 p-6 rounded-2xl text-center text-white transition-colors duration-200 bg-gray-900">
+        <h2 class="text-lg font-medium opacity-80">level</h2>
+        <p id="resultLevel" class="font-bold mt-1 text-4xl">N/A</p>
+        <div id="explanationContainer" class="hidden mt-4 pt-3 border-t border-red-400/40 text-xs sm:text-sm text-red-100 font-normal leading-relaxed text-left">
+          <span class="font-semibold text-white block mb-1">Explanation:</span>
+          <p id="explanationReason" class="text-white/95"></p>
+          <div class="my-2 border-t border-red-400/30"></div>
+          <p id="explanationElements" class="text-red-100"></p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Bottom Footer Area -->
+  <footer id="footerArea" class="w-full max-w-2xl pt-6 pb-3 border-t border-gray-200/80 flex flex-col items-center justify-center gap-3.5 text-center transition-colors">
+    <p id="attributionText" class="text-sm font-normal text-gray-700 transition-colors">
+      To make our life just little bit easier... Developed by <span id="attributionEmail" class="font-normal text-gray-900 transition-colors">kontakt@szymonwesolowski.pl</span>
+    </p>
+
+    <!-- 3 Action Buttons in a Single Line on Wide Screens -->
+    <div class="flex flex-wrap sm:flex-nowrap items-center justify-center gap-2.5 sm:gap-3 w-full">
+      <!-- 1. Send Feedback / Ideas -->
+      <button
+        id="btnOpenFeedback"
+        type="button"
+        class="inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium transition-colors border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 shadow-xs active:scale-95 cursor-pointer whitespace-nowrap shrink-0"
+      >
+        <svg class="w-4 h-4 text-gray-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+        </svg>
+        Send feedback / ideas
+      </button>
+
+      <!-- 2. Dark / Light Mode Toggle -->
+      <button
+        id="btnThemeToggle"
+        type="button"
+        class="inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium border border-gray-200 bg-white hover:bg-gray-50 text-neutral-800 shadow-xs transition-colors cursor-pointer active:scale-95 whitespace-nowrap shrink-0"
+      >
+        <span id="themeIcon">
+          <svg class="w-4 h-4 text-neutral-700 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+          </svg>
+        </span>
+        <span id="themeLabel">Dark</span>
+      </button>
+
+      <!-- 3. Share with Friend Button -->
+      <button
+        id="btnShare"
+        type="button"
+        class="inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium border border-gray-200 bg-white hover:bg-gray-50 text-neutral-800 shadow-xs transition-colors cursor-pointer active:scale-95 whitespace-nowrap shrink-0"
+      >
+        <svg class="w-4 h-4 text-neutral-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="18" cy="5" r="3" />
+          <circle cx="6" cy="12" r="3" />
+          <circle cx="18" cy="19" r="3" />
+          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+          <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+        </svg>
+        <span>Share app with Your LM friend</span>
+      </button>
+    </div>
+  </footer>
+
+  <!-- Toast Notification when link is copied -->
+  <div 
+    id="toastNotification" 
+    role="status" 
+    aria-live="polite" 
+    class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2.5 px-4 sm:px-5 py-3 rounded-2xl bg-neutral-900/95 text-white shadow-2xl border border-neutral-700/80 text-xs sm:text-sm font-medium max-w-[92vw] transition-all"
+  >
+    <svg class="w-5 h-5 text-emerald-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="20 6 9 17 4 12" />
+    </svg>
+    <span class="leading-snug">Link copied to clipboard! You can share it with Your LM friend!</span>
+    <button 
+      id="btnCloseToast"
+      type="button" 
+      class="ml-1 text-neutral-400 hover:text-white p-1 rounded-lg cursor-pointer transition-colors"
+      title="Dismiss"
+    >
+      <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18" />
+        <line x1="6" y1="6" x2="18" y2="18" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Feedback Modal -->
+  <div 
+    id="feedbackModal" 
+    class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 transition-all"
+  >
+    <div 
+      id="feedbackModalCard"
+      class="border rounded-3xl p-6 sm:p-7 w-full max-w-md shadow-2xl relative bg-[#f8f9fa] border-gray-200 text-neutral-900 transition-colors"
+    >
+      <!-- Modal Header -->
+      <div class="flex items-start justify-between mb-1.5">
+        <div class="flex items-center gap-2.5">
+          <svg class="w-5 h-5 text-amber-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+          </svg>
+          <h3 class="text-xl font-bold">Share feedback or idea</h3>
+        </div>
+        <button 
+          id="btnCloseModal"
+          type="button"
+          class="w-8 h-8 rounded-full flex items-center justify-center transition-colors bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-black cursor-pointer"
+          title="Close"
+        >
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+
+      <p id="modalSubtitle" class="text-xs text-gray-500 mb-5 leading-relaxed">
+        Have an idea for a new app or noticed an issue? Your message goes directly to my email address.
+      </p>
+
+      <!-- Category Switcher -->
+      <div class="mb-4">
+        <label id="categoryLabel" class="block text-xs font-semibold uppercase tracking-wider mb-2 text-gray-500">
+          REPORT CATEGORY
+        </label>
+        <div class="grid grid-cols-2 gap-2.5">
+          <button
+            id="catBtnIdea"
+            type="button"
+            class="py-2.5 px-3 rounded-xl text-xs sm:text-sm font-medium border border-amber-400 bg-amber-50/70 text-amber-900 font-semibold shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <span>💡</span> New App Idea
+          </button>
+          <button
+            id="catBtnBug"
+            type="button"
+            class="py-2.5 px-3 rounded-xl text-xs sm:text-sm font-medium border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 transition-all flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <span>🪲</span> Bug / Feedback
+          </button>
+        </div>
+      </div>
+
+      <!-- Message Textarea -->
+      <div class="mb-4">
+        <div class="flex justify-between items-center mb-1.5">
+          <label id="msgLabel" class="text-xs font-semibold uppercase tracking-wider text-gray-500">
+            YOUR MESSAGE
+          </label>
+          <span id="charCounter" class="text-xs text-neutral-400">0/500</span>
+        </div>
+        <textarea
+          id="feedbackMessage"
+          maxlength="500"
+          placeholder="Briefly describe your idea or report an issue..."
+          class="w-full h-28 p-3 rounded-xl border border-gray-200 bg-white text-gray-800 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-gray-400 transition-all resize-none"
+        ></textarea>
+      </div>
+
+      <!-- Contact Email (Optional) -->
+      <div class="mb-5">
+        <label id="emailLabel" class="block text-xs font-semibold uppercase tracking-wider mb-1.5 text-gray-500">
+          YOUR CONTACT EMAIL (OPTIONAL)
+        </label>
+        <input
+          id="feedbackEmail"
+          type="email"
+          placeholder="your@email.com"
+          class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 bg-white text-gray-800 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-gray-400 transition-all"
+        />
+      </div>
+
+      <!-- Modal Footer -->
+      <div id="modalFooter" class="pt-4 border-t border-gray-200/70 flex items-center justify-between gap-2 flex-wrap">
+        <div class="flex items-center gap-1.5 text-xs text-gray-500 truncate max-w-[170px]" title="kontakt@szymonwesolowski.pl">
+          <svg class="w-3.5 h-3.5 shrink-0 opacity-70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="20" height="16" x="2" y="4" rx="2" />
+            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+          </svg>
+          <span class="truncate">kontakt@szymonwesolowski...</span>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button
+            id="btnCopyFeedback"
+            type="button"
+            class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium flex items-center gap-1.5 transition-colors bg-gray-100 hover:bg-gray-200 text-gray-700 cursor-pointer"
+          >
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+              <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+            </svg>
+            <span id="copyBtnText">Copy text</span>
+          </button>
+
+          <button
+            id="btnSendEmail"
+            type="button"
+            class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 transition-colors shadow-xs bg-neutral-900 hover:bg-black text-white cursor-pointer active:scale-95"
+          >
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="20" height="16" x="2" y="4" rx="2" />
+              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+            </svg>
+            Send email
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Vanilla JavaScript Application Logic -->
+  <script>
+    // Elements definition
+    const ELEMENTS = [
+      { name: 'CHOREOGRAPHY', options: ['N/A', 1, 2] },
+      { name: 'TECHNIQUE', options: ['N/A', 1, 2, 3] },
+      { name: 'COACHING', options: ['N/A', 1, 2, 3] },
+      { name: 'CONNECTION', options: ['N/A', 1, 2, 3] },
+      { name: 'PERFORMANCE', options: ['N/A', 1, 2, 3] },
+    ];
+
+    // State
+    const grades = {
+      'CHOREOGRAPHY': 'N/A',
+      'TECHNIQUE': 'N/A',
+      'COACHING': 'N/A',
+      'CONNECTION': 'N/A',
+      'PERFORMANCE': 'N/A',
+    };
+
+    let isDark = false;
+    let selectedCategory = 'idea';
+    let toastTimeout = null;
+
+    // Warning message constant
+    const WARNING_MSG = "Incorrect GRADES were assigned to the KEY ELEMENTS.";
+
+    // Render Grade Elements
+    const elementsContainer = document.getElementById('elementsContainer');
+    function renderElements() {
+      elementsContainer.innerHTML = '';
+      ELEMENTS.forEach(element => {
+        const row = document.createElement('div');
+        
+        const label = document.createElement('label');
+        label.className = `block text-sm font-medium mb-2 ${isDark ? 'text-neutral-300' : 'text-gray-700'}`;
+        label.textContent = element.name;
+        row.appendChild(label);
+
+        const btnGroup = document.createElement('div');
+        btnGroup.className = 'flex gap-2 flex-wrap';
+
+        element.options.forEach(opt => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.textContent = opt;
+          
+          const isSelected = grades[element.name] === opt;
+          btn.className = `px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
+            isSelected
+              ? (isDark ? 'bg-white text-black font-bold shadow-xs' : 'bg-black text-white font-medium')
+              : (isDark ? 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700' : 'bg-gray-100 text-gray-700 hover:bg-gray-200')
+          }`;
+
+          btn.addEventListener('click', () => {
+            grades[element.name] = opt;
+            renderElements();
+          });
+
+          btnGroup.appendChild(btn);
+        });
+
+        row.appendChild(btnGroup);
+        elementsContainer.appendChild(row);
+      });
+    }
+
+    // Level Calculation Engine (All 20 Rules)
+    function calculateLevel() {
+      const c = grades['CHOREOGRAPHY'];
+      const t = grades['TECHNIQUE'];
+      const co = grades['COACHING'];
+      const conn = grades['CONNECTION'];
+      const p = grades['PERFORMANCE'];
+
+      // Rule 3: Any essential element N/A -> PASS PENDING
+      if (c === 'N/A' || t === 'N/A' || co === 'N/A') return 'PASS PENDING';
+
+      const countTwos = [t, co, conn, p].filter(g => g === 2).length;
+      const countThrees = [t, co, conn, p].filter(g => g === 3).length;
+      const countOnes = [t, co, conn, p].filter(g => g === 1).length;
+
+      // Rule 19: CHOREOGRAPHY = 2, four other = 3 -> Level 10
+      if (c === 2 && countThrees === 4) return 'Level 10';
+
+      // Rule 18: CHOREOGRAPHY = 2, one other = 2, three other = 3 -> Level 9
+      if (c === 2 && countTwos === 1 && countThrees === 3) return 'Level 9';
+
+      // Rule 17: CHOREOGRAPHY = 2, two other = 2, two other = 3 -> Level 8
+      if (c === 2 && countTwos === 2 && countThrees === 2) return 'Level 8';
+
+      // Rule 15: CHOREOGRAPHY = 2, one other = 2, two other = 3 -> Level 7
+      if (c === 2 && countTwos === 1 && countThrees === 2) return 'Level 7';
+
+      // Rule 16: CHOREOGRAPHY = 2, three other = 2, one other = 3 -> Level 7
+      if (c === 2 && countTwos === 3 && countThrees === 1) return 'Level 7';
+
+      // Rule 13: CHOREOGRAPHY = 2, two other = 2, one other = 3 -> Level 6.5
+      if (c === 2 && countTwos === 2 && countThrees === 1) return 'Level 6.5';
+
+      // Rule 14: CHOREOGRAPHY = 2, four other = 2 -> Level 6.5
+      if (c === 2 && countTwos === 4) return 'Level 6.5';
+
+      // Rule 12: CHOREOGRAPHY = 2, three other = 2, one other = 1 -> Level 6
+      if (c === 2 && countTwos === 3 && countOnes === 1) return 'Level 6';
+
+      // Rule 9: CHOREOGRAPHY = 2, at least one = 2 and at least one = 3 -> Level 5
+      if (c === 2 && countTwos >= 1 && countThrees >= 1) return 'Level 5';
+
+      // Rule 10: CHOREOGRAPHY = 2, at least two = 2 and all remaining = 1 -> Level 5
+      if (c === 2 && countTwos >= 2 && (countTwos + countOnes === 4)) return 'Level 5';
+
+      // Rule 11: CHOREOGRAPHY = 2, at least one = 3 and all remaining = 1 -> Level 5
+      if (c === 2 && countThrees >= 1 && (countThrees + countOnes === 4)) return 'Level 5';
+
+      // Rule 6: CHOREOGRAPHY = 2, at least two = 2 -> Level 4
+      if (c === 2 && countTwos >= 2) return 'Level 4';
+
+      // Rule 7: CHOREOGRAPHY = 2, at least one = 3 -> Level 4
+      if (c === 2 && countThrees >= 1) return 'Level 4';
+
+      // Rule 8: CHOREOGRAPHY = 2, at least one = 2 and all remaining = 1 -> Level 4
+      if (c === 2 && countTwos >= 1 && (countTwos + countOnes === 4)) return 'Level 4';
+
+      // Rule 4: CHOREOGRAPHY = 2, any other = 2 -> Level 3
+      if (c === 2 && (t === 2 || co === 2 || conn === 2 || p === 2)) return 'Level 3';
+
+      // Rule 5: CHOREOGRAPHY = 2, all four other = 1 -> Level 3
+      if (c === 2 && t === 1 && co === 1 && conn === 1 && p === 1) return 'Level 3';
+
+      // Rule 2: CHOREOGRAPHY = 2, TECHNIQUE = 1, COACHING = 1 -> Level 2
+      if (c === 2 && t === 1 && co === 1) return 'Level 2';
+
+      // Rule 20: CHOREOGRAPHY = 1, no other element may exceed Grade 1
+      if (c === 1 && (
+        (t !== 'N/A' && t > 1) ||
+        (co !== 'N/A' && co > 1) ||
+        (conn !== 'N/A' && conn > 1) ||
+        (p !== 'N/A' && p > 1)
+      )) {
+        return WARNING_MSG;
+      }
+
+      // Rule 1: CHOREOGRAPHY = 1, TECHNIQUE = 1, COACHING = 1 -> Level 1
+      if (c === 1 && t === 1 && co === 1) return 'Level 1';
+
+      return WARNING_MSG;
+    }
+
+    function getWarningDetails() {
+      const c = grades['CHOREOGRAPHY'];
+      const t = grades['TECHNIQUE'];
+      const co = grades['COACHING'];
+      const conn = grades['CONNECTION'];
+      const p = grades['PERFORMANCE'];
+
+      const issues = [];
+      if (c === 1) {
+        if (t !== 'N/A' && t > 1) issues.push(`TECHNIQUE (Grade ${t})`);
+        if (co !== 'N/A' && co > 1) issues.push(`COACHING (Grade ${co})`);
+        if (conn !== 'N/A' && conn > 1) issues.push(`CONNECTION (Grade ${conn})`);
+        if (p !== 'N/A' && p > 1) issues.push(`PERFORMANCE (Grade ${p})`);
+      }
+
+      const reason = "When CHOREOGRAPHY is Grade 1, no other KEY ELEMENT may exceed Grade 1. (Higher qualification levels require CHOREOGRAPHY Grade 2).";
+      const elementsList = issues.length > 0
+        ? `Elements with grades that are too high: ${issues.join(', ')}.`
+        : `Current grades: CHOREOGRAPHY = ${c}, TECHNIQUE = ${t}, COACHING = ${co}.`;
+
+      return { reason, elementsList };
+    }
+
+    // Update Result UI
+    const resultContainer = document.getElementById('resultContainer');
+    const resultLevel = document.getElementById('resultLevel');
+    const explanationContainer = document.getElementById('explanationContainer');
+    const explanationReason = document.getElementById('explanationReason');
+    const explanationElements = document.getElementById('explanationElements');
+
+    function updateResultUI(level) {
+      resultLevel.textContent = level;
+      const isWarning = level === WARNING_MSG;
+      const isPassPending = level === 'PASS PENDING';
+
+      if (isWarning || isPassPending) {
+        resultContainer.className = 'mt-8 p-6 rounded-2xl text-center text-white transition-colors duration-200 bg-red-600 shadow-md';
+      } else {
+        resultContainer.className = `mt-8 p-6 rounded-2xl text-center text-white transition-colors duration-200 ${
+          isDark ? 'bg-neutral-800 border border-neutral-700/60' : 'bg-gray-900'
+        }`;
+      }
+
+      if (isWarning) {
+        resultLevel.className = 'font-bold mt-1 text-xl sm:text-2xl leading-snug';
+        const { reason, elementsList } = getWarningDetails();
+        explanationReason.textContent = reason;
+        explanationElements.textContent = elementsList;
+        explanationContainer.classList.remove('hidden');
+      } else {
+        resultLevel.className = 'font-bold mt-1 text-4xl';
+        explanationContainer.classList.add('hidden');
+      }
+    }
+
+    // Reset button
+    document.getElementById('btnReset').addEventListener('click', () => {
+      ELEMENTS.forEach(el => { grades[el.name] = 'N/A'; });
+      renderElements();
+      updateResultUI('N/A');
+    });
+
+    // Calculate button
+    document.getElementById('btnCalculate').addEventListener('click', () => {
+      const res = calculateLevel();
+      updateResultUI(res);
+    });
+
+    // Dark Mode Toggle
+    const btnThemeToggle = document.getElementById('btnThemeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    const themeLabel = document.getElementById('themeLabel');
+
+    function applyTheme() {
+      const body = document.body;
+      const card = document.getElementById('calculatorCard');
+      const title = document.getElementById('appTitle');
+      const sub = document.getElementById('appSubtitle');
+      const btnReset = document.getElementById('btnReset');
+      const btnCalc = document.getElementById('btnCalculate');
+      const footer = document.getElementById('footerArea');
+      const attr = document.getElementById('attributionText');
+      const attrEmail = document.getElementById('attributionEmail');
+      const btnFeedback = document.getElementById('btnOpenFeedback');
+      const btnShare = document.getElementById('btnShare');
+
+      // Modal elements
+      const mCard = document.getElementById('feedbackModalCard');
+      const mSub = document.getElementById('modalSubtitle');
+      const mCatLabel = document.getElementById('categoryLabel');
+      const mMsgLabel = document.getElementById('msgLabel');
+      const mEmailLabel = document.getElementById('emailLabel');
+      const mMsg = document.getElementById('feedbackMessage');
+      const mEmail = document.getElementById('feedbackEmail');
+      const mFooter = document.getElementById('modalFooter');
+      const mClose = document.getElementById('btnCloseModal');
+      const mCopy = document.getElementById('btnCopyFeedback');
+      const mSend = document.getElementById('btnSendEmail');
+
+      if (isDark) {
+        body.className = 'bg-neutral-950 text-neutral-100 transition-colors duration-200 min-h-screen flex flex-col items-center justify-between p-4 sm:p-6 font-sans';
+        card.className = 'bg-neutral-900 border border-neutral-800 rounded-3xl p-8 w-full max-w-lg shadow-xl transition-colors duration-200';
+        title.className = 'font-bebas text-4xl sm:text-5xl tracking-wide text-white leading-none transition-colors';
+        sub.className = 'text-neutral-400 mb-8 text-sm transition-colors';
+        btnReset.className = 'p-2.5 rounded-xl bg-neutral-800 text-neutral-400 hover:text-white hover:bg-neutral-700 transition-all flex items-center justify-center active:scale-95 group cursor-pointer';
+        btnCalc.className = 'w-full mt-8 py-3 bg-white text-black font-bold rounded-2xl hover:bg-neutral-200 transition-all cursor-pointer active:scale-[0.99] shadow-sm';
+        footer.className = 'w-full max-w-2xl pt-6 pb-3 border-t border-neutral-800/80 flex flex-col items-center justify-center gap-3.5 text-center transition-colors';
+        attr.className = 'text-sm font-normal text-neutral-400 transition-colors';
+        attrEmail.className = 'font-normal text-white transition-colors';
+        
+        btnFeedback.className = 'inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium transition-colors border border-neutral-800 bg-neutral-900 hover:bg-neutral-800 text-neutral-300 shadow-xs active:scale-95 cursor-pointer whitespace-nowrap shrink-0';
+        btnThemeToggle.className = 'inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium border border-neutral-800 bg-neutral-900 hover:bg-neutral-800 text-neutral-100 shadow-xs transition-colors cursor-pointer active:scale-95 whitespace-nowrap shrink-0';
+        btnShare.className = 'inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium border border-neutral-800 bg-neutral-900 hover:bg-neutral-800 text-neutral-100 shadow-xs transition-colors cursor-pointer active:scale-95 whitespace-nowrap shrink-0';
+
+        themeIcon.innerHTML = `<svg class="w-4 h-4 text-amber-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" /></svg>`;
+        themeLabel.textContent = 'Light';
+
+        // Modal
+        mCard.className = 'border rounded-3xl p-6 sm:p-7 w-full max-w-md shadow-2xl relative bg-neutral-900 border-neutral-800 text-neutral-100 transition-colors';
+        mSub.className = 'text-xs text-neutral-400 mb-5 leading-relaxed';
+        mCatLabel.className = 'block text-xs font-semibold uppercase tracking-wider mb-2 text-neutral-400';
+        mMsgLabel.className = 'text-xs font-semibold uppercase tracking-wider text-neutral-400';
+        mEmailLabel.className = 'block text-xs font-semibold uppercase tracking-wider mb-1.5 text-neutral-400';
+        mMsg.className = 'w-full h-28 p-3 rounded-xl border border-neutral-800 bg-neutral-950 text-white placeholder-neutral-500 text-sm focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-neutral-700 transition-all resize-none';
+        mEmail.className = 'w-full px-3.5 py-2.5 rounded-xl border border-neutral-800 bg-neutral-950 text-white placeholder-neutral-500 text-sm focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-neutral-700 transition-all';
+        mFooter.className = 'pt-4 border-t border-neutral-800 flex items-center justify-between gap-2 flex-wrap';
+        mClose.className = 'w-8 h-8 rounded-full flex items-center justify-center transition-colors bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white cursor-pointer';
+        mCopy.className = 'px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium flex items-center gap-1.5 transition-colors bg-neutral-800 hover:bg-neutral-700 text-neutral-200 cursor-pointer';
+        mSend.className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 transition-colors shadow-xs bg-white text-black hover:bg-neutral-200 cursor-pointer active:scale-95';
+      } else {
+        body.className = 'bg-gray-50 text-neutral-900 transition-colors duration-200 min-h-screen flex flex-col items-center justify-between p-4 sm:p-6 font-sans';
+        card.className = 'bg-white border border-gray-100 rounded-3xl p-8 w-full max-w-lg shadow-sm transition-colors duration-200';
+        title.className = 'font-bebas text-4xl sm:text-5xl tracking-wide text-neutral-900 leading-none transition-colors';
+        sub.className = 'text-gray-500 mb-8 text-sm transition-colors';
+        btnReset.className = 'p-2.5 rounded-xl bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-neutral-900 transition-all flex items-center justify-center active:scale-95 group cursor-pointer';
+        btnCalc.className = 'w-full mt-8 py-3 bg-black text-white font-bold rounded-2xl hover:bg-gray-800 transition-all cursor-pointer active:scale-[0.99]';
+        footer.className = 'w-full max-w-2xl pt-6 pb-3 border-t border-gray-200/80 flex flex-col items-center justify-center gap-3.5 text-center transition-colors';
+        attr.className = 'text-sm font-normal text-gray-700 transition-colors';
+        attrEmail.className = 'font-normal text-gray-900 transition-colors';
+
+        btnFeedback.className = 'inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium transition-colors border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 shadow-xs active:scale-95 cursor-pointer whitespace-nowrap shrink-0';
+        btnThemeToggle.className = 'inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium border border-gray-200 bg-white hover:bg-gray-50 text-neutral-800 shadow-xs transition-colors cursor-pointer active:scale-95 whitespace-nowrap shrink-0';
+        btnShare.className = 'inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium border border-gray-200 bg-white hover:bg-gray-50 text-neutral-800 shadow-xs transition-colors cursor-pointer active:scale-95 whitespace-nowrap shrink-0';
+
+        themeIcon.innerHTML = `<svg class="w-4 h-4 text-neutral-700 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></svg>`;
+        themeLabel.textContent = 'Dark';
+
+        // Modal
+        mCard.className = 'border rounded-3xl p-6 sm:p-7 w-full max-w-md shadow-2xl relative bg-[#f8f9fa] border-gray-200 text-neutral-900 transition-colors';
+        mSub.className = 'text-xs text-gray-500 mb-5 leading-relaxed';
+        mCatLabel.className = 'block text-xs font-semibold uppercase tracking-wider mb-2 text-gray-500';
+        mMsgLabel.className = 'text-xs font-semibold uppercase tracking-wider text-gray-500';
+        mEmailLabel.className = 'block text-xs font-semibold uppercase tracking-wider mb-1.5 text-gray-500';
+        mMsg.className = 'w-full h-28 p-3 rounded-xl border border-gray-200 bg-white text-gray-800 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-gray-400 transition-all resize-none';
+        mEmail.className = 'w-full px-3.5 py-2.5 rounded-xl border border-gray-200 bg-white text-gray-800 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-gray-400 transition-all';
+        mFooter.className = 'pt-4 border-t border-gray-200/70 flex items-center justify-between gap-2 flex-wrap';
+        mClose.className = 'w-8 h-8 rounded-full flex items-center justify-center transition-colors bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-black cursor-pointer';
+        mCopy.className = 'px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium flex items-center gap-1.5 transition-colors bg-gray-100 hover:bg-gray-200 text-gray-700 cursor-pointer';
+        mSend.className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 transition-colors shadow-xs bg-neutral-900 hover:bg-black text-white cursor-pointer active:scale-95';
+      }
+
+      updateCategoryButtons();
+      renderElements();
+      updateResultUI(resultLevel.textContent);
+    }
+
+    btnThemeToggle.addEventListener('click', () => {
+      isDark = !isDark;
+      applyTheme();
+    });
+
+    // Share link to clipboard and show toast
+    const toast = document.getElementById('toastNotification');
+    document.getElementById('btnCloseToast').addEventListener('click', () => {
+      toast.classList.add('hidden');
+    });
+
+    document.getElementById('btnShare').addEventListener('click', async () => {
+      const url = window.location.href;
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(url);
+        } else {
+          const ta = document.createElement('textarea');
+          ta.value = url;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+        }
+      } catch (err) {
+        const ta = document.createElement('textarea');
+        ta.value = url;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+      }
+
+      toast.classList.remove('hidden');
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 4500);
+    });
+
+    // Modal logic
+    const modal = document.getElementById('feedbackModal');
+    const btnOpenFeedback = document.getElementById('btnOpenFeedback');
+    const btnCloseModal = document.getElementById('btnCloseModal');
+    const catBtnIdea = document.getElementById('catBtnIdea');
+    const catBtnBug = document.getElementById('catBtnBug');
+    const feedbackMessage = document.getElementById('feedbackMessage');
+    const feedbackEmail = document.getElementById('feedbackEmail');
+    const charCounter = document.getElementById('charCounter');
+    const btnCopyFeedback = document.getElementById('btnCopyFeedback');
+    const copyBtnText = document.getElementById('copyBtnText');
+    const btnSendEmail = document.getElementById('btnSendEmail');
+
+    btnOpenFeedback.addEventListener('click', () => {
+      modal.classList.remove('hidden');
+    });
+
+    btnCloseModal.addEventListener('click', () => {
+      modal.classList.add('hidden');
+    });
+
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.classList.add('hidden');
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+        modal.classList.add('hidden');
+      }
+    });
+
+    function updateCategoryButtons() {
+      if (selectedCategory === 'idea') {
+        catBtnIdea.className = `py-2.5 px-3 rounded-xl text-xs sm:text-sm font-semibold border transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs ${
+          isDark ? 'border-amber-400 bg-amber-950/40 text-amber-300' : 'border-amber-400 bg-amber-50/70 text-amber-900'
+        }`;
+        catBtnBug.className = `py-2.5 px-3 rounded-xl text-xs sm:text-sm font-medium border transition-all flex items-center justify-center gap-2 cursor-pointer ${
+          isDark ? 'border-neutral-800 bg-neutral-950 text-neutral-300 hover:bg-neutral-800' : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
+        }`;
+      } else {
+        catBtnBug.className = `py-2.5 px-3 rounded-xl text-xs sm:text-sm font-semibold border transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs ${
+          isDark ? 'border-teal-400 bg-teal-950/40 text-teal-300' : 'border-teal-400 bg-teal-50/70 text-teal-900'
+        }`;
+        catBtnIdea.className = `py-2.5 px-3 rounded-xl text-xs sm:text-sm font-medium border transition-all flex items-center justify-center gap-2 cursor-pointer ${
+          isDark ? 'border-neutral-800 bg-neutral-950 text-neutral-300 hover:bg-neutral-800' : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
+        }`;
+      }
+    }
+
+    catBtnIdea.addEventListener('click', () => {
+      selectedCategory = 'idea';
+      updateCategoryButtons();
+    });
+
+    catBtnBug.addEventListener('click', () => {
+      selectedCategory = 'bug';
+      updateCategoryButtons();
+    });
+
+    feedbackMessage.addEventListener('input', () => {
+      charCounter.textContent = `${feedbackMessage.value.length}/500`;
+    });
+
+    btnCopyFeedback.addEventListener('click', async () => {
+      const catLabel = selectedCategory === 'idea' ? 'New App Idea' : 'Bug / Feedback';
+      const text = `Category: ${catLabel}\nMessage: ${feedbackMessage.value || '(empty)'}\nEmail: ${feedbackEmail.value || 'Not provided'}`;
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch (err) {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+      }
+      copyBtnText.textContent = 'Copied!';
+      setTimeout(() => {
+        copyBtnText.textContent = 'Copy text';
+      }, 2000);
+    });
+
+    btnSendEmail.addEventListener('click', () => {
+      const catLabel = selectedCategory === 'idea' ? 'New App Idea' : 'Bug / Feedback';
+      const subject = encodeURIComponent(`[LM Qualifications] ${catLabel}`);
+      const body = encodeURIComponent(`Category: ${catLabel}\n\nMessage:\n${feedbackMessage.value}\n\nSender: ${feedbackEmail.value || 'Not provided'}`);
+      window.location.href = `mailto:kontakt@szymonwesolowski.pl?subject=${subject}&body=${body}`;
+    });
+
+    // Initialize UI on load
+    renderElements();
+    updateResultUI('N/A');
+    applyTheme();
+  </script>
+</body>
+</html>
