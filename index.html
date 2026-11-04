@@ -71,11 +71,9 @@
       <div id="resultContainer" class="mt-8 p-6 rounded-2xl text-center text-white transition-colors duration-200 bg-gray-900">
         <h2 class="text-lg font-medium opacity-80">level</h2>
         <p id="resultLevel" class="font-bold mt-1 text-4xl">N/A</p>
-        <div id="explanationContainer" class="hidden mt-4 pt-3 border-t border-red-400/40 text-xs sm:text-sm text-red-100 font-normal leading-relaxed text-left">
+        <div id="explanationContainer" class="hidden mt-4 pt-3 border-t border-neutral-700/80 text-xs sm:text-sm text-neutral-300 font-normal leading-relaxed text-left">
           <span class="font-semibold text-white block mb-1">Explanation:</span>
-          <p id="explanationReason" class="text-white/95"></p>
-          <div class="my-2 border-t border-red-400/30"></div>
-          <p id="explanationElements" class="text-red-100"></p>
+          <p id="explanationReason" class="text-neutral-200"></p>
         </div>
       </div>
 
@@ -308,9 +306,6 @@
     let selectedCategory = 'idea';
     let toastTimeout = null;
 
-    // Warning message constant
-    const WARNING_MSG = "LEVEL 1.";
-
     // Render Grade Elements
     const elementsContainer = document.getElementById('elementsContainer');
     function renderElements() {
@@ -360,96 +355,80 @@
       const p = grades['PERFORMANCE'];
 
       // Rule 3: Any essential element N/A -> PASS PENDING
-      if (c === 'N/A' || t === 'N/A' || co === 'N/A') return 'PASS PENDING';
+      if (c === 'N/A' || t === 'N/A' || co === 'N/A') {
+        return { level: 'PASS PENDING', isWarning: false };
+      }
 
       const countTwos = [t, co, conn, p].filter(g => g === 2).length;
       const countThrees = [t, co, conn, p].filter(g => g === 3).length;
       const countOnes = [t, co, conn, p].filter(g => g === 1).length;
 
       // Rule 19: CHOREOGRAPHY = 2, four other = 3 -> Level 10
-      if (c === 2 && countThrees === 4) return 'Level 10';
+      if (c === 2 && countThrees === 4) return { level: 'Level 10', isWarning: false };
 
       // Rule 18: CHOREOGRAPHY = 2, one other = 2, three other = 3 -> Level 9
-      if (c === 2 && countTwos === 1 && countThrees === 3) return 'Level 9';
+      if (c === 2 && countTwos === 1 && countThrees === 3) return { level: 'Level 9', isWarning: false };
 
       // Rule 17: CHOREOGRAPHY = 2, two other = 2, two other = 3 -> Level 8
-      if (c === 2 && countTwos === 2 && countThrees === 2) return 'Level 8';
+      if (c === 2 && countTwos === 2 && countThrees === 2) return { level: 'Level 8', isWarning: false };
 
       // Rule 15: CHOREOGRAPHY = 2, one other = 2, two other = 3 -> Level 7
-      if (c === 2 && countTwos === 1 && countThrees === 2) return 'Level 7';
+      if (c === 2 && countTwos === 1 && countThrees === 2) return { level: 'Level 7', isWarning: false };
 
       // Rule 16: CHOREOGRAPHY = 2, three other = 2, one other = 3 -> Level 7
-      if (c === 2 && countTwos === 3 && countThrees === 1) return 'Level 7';
+      if (c === 2 && countTwos === 3 && countThrees === 1) return { level: 'Level 7', isWarning: false };
 
       // Rule 13: CHOREOGRAPHY = 2, two other = 2, one other = 3 -> Level 6.5
-      if (c === 2 && countTwos === 2 && countThrees === 1) return 'Level 6.5';
+      if (c === 2 && countTwos === 2 && countThrees === 1) return { level: 'Level 6.5', isWarning: false };
 
       // Rule 14: CHOREOGRAPHY = 2, four other = 2 -> Level 6.5
-      if (c === 2 && countTwos === 4) return 'Level 6.5';
+      if (c === 2 && countTwos === 4) return { level: 'Level 6.5', isWarning: false };
 
       // Rule 12: CHOREOGRAPHY = 2, three other = 2, one other = 1 -> Level 6
-      if (c === 2 && countTwos === 3 && countOnes === 1) return 'Level 6';
+      if (c === 2 && countTwos === 3 && countOnes === 1) return { level: 'Level 6', isWarning: false };
 
       // Rule 9: CHOREOGRAPHY = 2, at least one = 2 and at least one = 3 -> Level 5
-      if (c === 2 && countTwos >= 1 && countThrees >= 1) return 'Level 5';
+      if (c === 2 && countTwos >= 1 && countThrees >= 1) return { level: 'Level 5', isWarning: false };
 
       // Rule 10: CHOREOGRAPHY = 2, at least two = 2 and all remaining = 1 -> Level 5
-      if (c === 2 && countTwos >= 2 && (countTwos + countOnes === 4)) return 'Level 5';
+      if (c === 2 && countTwos >= 2 && (countTwos + countOnes === 4)) return { level: 'Level 5', isWarning: false };
 
       // Rule 11: CHOREOGRAPHY = 2, at least one = 3 and all remaining = 1 -> Level 5
-      if (c === 2 && countThrees >= 1 && (countThrees + countOnes === 4)) return 'Level 5';
+      if (c === 2 && countThrees >= 1 && (countThrees + countOnes === 4)) return { level: 'Level 5', isWarning: false };
 
       // Rule 6: CHOREOGRAPHY = 2, at least two = 2 -> Level 4
-      if (c === 2 && countTwos >= 2) return 'Level 4';
+      if (c === 2 && countTwos >= 2) return { level: 'Level 4', isWarning: false };
 
       // Rule 7: CHOREOGRAPHY = 2, at least one = 3 -> Level 4
-      if (c === 2 && countThrees >= 1) return 'Level 4';
+      if (c === 2 && countThrees >= 1) return { level: 'Level 4', isWarning: false };
 
       // Rule 8: CHOREOGRAPHY = 2, at least one = 2 and all remaining = 1 -> Level 4
-      if (c === 2 && countTwos >= 1 && (countTwos + countOnes === 4)) return 'Level 4';
+      if (c === 2 && countTwos >= 1 && (countTwos + countOnes === 4)) return { level: 'Level 4', isWarning: false };
 
       // Rule 4: CHOREOGRAPHY = 2, any other = 2 -> Level 3
-      if (c === 2 && (t === 2 || co === 2 || conn === 2 || p === 2)) return 'Level 3';
+      if (c === 2 && (t === 2 || co === 2 || conn === 2 || p === 2)) return { level: 'Level 3', isWarning: false };
 
       // Rule 5: CHOREOGRAPHY = 2, all four other = 1 -> Level 3
-      if (c === 2 && t === 1 && co === 1 && conn === 1 && p === 1) return 'Level 3';
+      if (c === 2 && t === 1 && co === 1 && conn === 1 && p === 1) return { level: 'Level 3', isWarning: false };
 
       // Rule 2: CHOREOGRAPHY = 2, TECHNIQUE = 1, COACHING = 1 -> Level 2
-      if (c === 2 && t === 1 && co === 1) return 'Level 2';
+      if (c === 2 && t === 1 && co === 1) return { level: 'Level 2', isWarning: false };
 
-      // Rule 20: CHOREOGRAPHY = 1, no other element may exceed Grade 1
+      // Rule 20: CHOREOGRAPHY = 1, no other element may exceed Grade 1. If higher -> Warning "Level 1"
       if (c === 1 && (
         (t !== 'N/A' && t > 1) ||
         (co !== 'N/A' && co > 1) ||
         (conn !== 'N/A' && conn > 1) ||
         (p !== 'N/A' && p > 1)
       )) {
-        return WARNING_MSG;
+        return { level: 'Level 1', isWarning: true };
       }
 
-      // Rule 1: CHOREOGRAPHY = 1, TECHNIQUE = 1, COACHING = 1 -> Level 1
-      if (c === 1 && t === 1 && co === 1) return 'Level 1';
+      // Rule 1: CHOREOGRAPHY = 1, TECHNIQUE = 1, COACHING = 1 -> Level 1 (normal)
+      if (c === 1 && t === 1 && co === 1) return { level: 'Level 1', isWarning: false };
 
-      return WARNING_MSG;
-    }
-
-    function getWarningDetails() {
-      const c = grades['CHOREOGRAPHY'];
-      const t = grades['TECHNIQUE'];
-      const co = grades['COACHING'];
-      const conn = grades['CONNECTION'];
-      const p = grades['PERFORMANCE'];
-
-      const issues = [];
-      if (c === 1) {
-        if (t !== 'N/A' && t > 1) issues.push(`TECHNIQUE (Grade ${t})`);
-        if (co !== 'N/A' && co > 1) issues.push(`COACHING (Grade ${co})`);
-        if (conn !== 'N/A' && conn > 1) issues.push(`CONNECTION (Grade ${conn})`);
-        if (p !== 'N/A' && p > 1) issues.push(`PERFORMANCE (Grade ${p})`);
-      }
-
-      const reason = "Reaching a LEVEL higher than 1, requires a GRADE 2 in CHOREOGRAPHY.";
-      
+      // Default warning fallback
+      return { level: 'Level 1', isWarning: true };
     }
 
     // Update Result UI
@@ -457,29 +436,34 @@
     const resultLevel = document.getElementById('resultLevel');
     const explanationContainer = document.getElementById('explanationContainer');
     const explanationReason = document.getElementById('explanationReason');
-    const explanationElements = document.getElementById('explanationElements');
 
-    function updateResultUI(level) {
+    let currentLevel = 'N/A';
+    let currentIsWarning = false;
+
+    function updateResultUI(level, isWarning = false) {
+      currentLevel = level;
+      currentIsWarning = isWarning;
       resultLevel.textContent = level;
-      const isWarning = level === WARNING_MSG;
       const isPassPending = level === 'PASS PENDING';
 
-      if (isWarning || isPassPending) {
-        resultContainer.className = 'mt-8 p-6 rounded-2xl text-center text-white transition-colors duration-200 bg-red-600 shadow-md';
+      if (isPassPending) {
+        resultContainer.className = 'mt-8 p-6 rounded-2xl text-center text-white transition-colors duration-200 bg-[#db1706] shadow-md';
       } else {
         resultContainer.className = `mt-8 p-6 rounded-2xl text-center text-white transition-colors duration-200 ${
           isDark ? 'bg-neutral-800 border border-neutral-700/60' : 'bg-gray-900'
         }`;
       }
 
-      if (isWarning) {
-        resultLevel.className = 'font-bold mt-1 text-xl sm:text-2xl leading-snug';
-        const { reason, elementsList } = getWarningDetails();
-        explanationReason.textContent = reason;
-        explanationElements.textContent = elementsList;
-        explanationContainer.classList.remove('hidden');
+      if (isPassPending) {
+        resultLevel.className = 'font-bold mt-1 text-2xl sm:text-3xl leading-snug';
       } else {
         resultLevel.className = 'font-bold mt-1 text-4xl';
+      }
+
+      if (isWarning) {
+        explanationReason.textContent = "Reaching CERTIFICATION LEVEL higher than LEVEL 1, requires a GRADE 2 in CHOREOGRAPHY";
+        explanationContainer.classList.remove('hidden');
+      } else {
         explanationContainer.classList.add('hidden');
       }
     }
@@ -488,13 +472,13 @@
     document.getElementById('btnReset').addEventListener('click', () => {
       ELEMENTS.forEach(el => { grades[el.name] = 'N/A'; });
       renderElements();
-      updateResultUI('N/A');
+      updateResultUI('N/A', false);
     });
 
     // Calculate button
     document.getElementById('btnCalculate').addEventListener('click', () => {
       const res = calculateLevel();
-      updateResultUI(res);
+      updateResultUI(res.level, res.isWarning);
     });
 
     // Dark Mode Toggle
@@ -592,7 +576,7 @@
 
       updateCategoryButtons();
       renderElements();
-      updateResultUI(resultLevel.textContent);
+      updateResultUI(currentLevel, currentIsWarning);
     }
 
     btnThemeToggle.addEventListener('click', () => {
