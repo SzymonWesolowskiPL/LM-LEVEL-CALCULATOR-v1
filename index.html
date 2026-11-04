@@ -449,9 +449,7 @@
       }
 
       const reason = "Reaching a LEVEL higher than 1, requires a GRADE 2 in CHOREOGRAPHY.";
-      const elementsList = issues.length > 0
-        ? `Elements with grades that are too high: ${issues.join(', ')}.`
-        : `Current grades: CHOREOGRAPHY = ${c}, TECHNIQUE = ${t}, COACHING = ${co}.`;
+     
 
       return { reason, elementsList };
     }
